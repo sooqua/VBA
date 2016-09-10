@@ -1,0 +1,13 @@
+Sub Macro1()
+    Dim vDirectory As String
+    Dim oDoc As Document
+    vDirectory = "C:\Users\username\Desktop\"
+    vFile = Dir(vDirectory & "*.*")
+    Do While vFile <> ""
+        Set oDoc = Documents.Open(FileName:=vDirectory & vFile)
+        
+        oDoc.Close SaveChanges:=True
+        vFile = Dir
+    Loop
+End Sub
+
