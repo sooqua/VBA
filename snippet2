@@ -1,0 +1,41 @@
+Sub Macro1()
+    Dim r As Range
+    
+    Set r = ActiveDocument.Range(0, 0)
+    r.EndOf wdParagraph, wdExtend
+    r.Font.Italic = False
+    
+    r.WholeStory
+    r.Font.Color = wdColorAutomatic
+    
+    FindLongParagraph r
+    r.EndOf wdStory, wdExtend
+    r.Font.Size = 16
+    r.ParagraphFormat.LineSpacing = LinesToPoints(1.5)
+    
+    RemoveEmptyLines
+    
+    Selection.GoTo wdGoToPage, wdGoToLast
+    Selection.EndKey wdStory, wdExtend
+    If Selection.Range.ComputeStatistics(Word.WdStatistic.wdStatisticLines) <= 4 Then
+        Selection.PageSetup.BottomMargin = InchesToPoints(0.63)
+    End If
+End Sub
+Private Function FindLongParagraph(ByVal r As Range)
+    Dim objPara As Variant
+    For Each objPara In ActiveDocument.Paragraphs
+        If objPara.Range.ComputeStatistics(Word.WdStatistic.wdStatisticLines) > 1 Then
+            r.SetRange objPara.Range.Start, objPara.Range.End
+            Exit For
+        End If
+    Next objPara
+End Function
+Private Sub RemoveEmptyLines()
+    Dim lastpar As Paragraph
+    Set lastpar = ActiveDocument.Range.Paragraphs.Last
+    While Len(lastpar.Range.Text) = 1
+        Set lastpar = lastpar.Previous
+        lastpar.Next.Range.Delete
+    Wend
+End Sub
+
